@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Star Citizen Cargo Route Optimizer</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Header -->
+            <header class="col-12 py-3 text-center text-white">
+                <h1>Star Citizen Cargo Route Optimizer</h1>
+                <p class="lead">Optimize your cargo hauling routes in the Stanton system</p>
+            </header>
+
+            <!-- Main Content -->
+            <div class="row g-0 main-content">
+                <!-- Left Panel: Controls -->
+                <div class="col-md-4">
+                    <div class="control-panel">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Mission Planner</h3>
+                            </div>
+                            <div class="card-body">
+                                <!-- Ship Selection -->
+                                <div class="mb-4">
+                                    <h4>Select Your Ship</h4>
+                                    <select id="ship-select" class="form-select">
+                                        <option value="taurus" selected>Constellation Taurus (168 SCU)</option>
+                                        <option value="freelancer">Freelancer (66 SCU)</option>
+                                        <option value="cutlass_black">Cutlass Black (46 SCU)</option>
+                                        <option value="caterpillar">Caterpillar (576 SCU)</option>
+                                        <option value="c2_hercules">C2 Hercules (696 SCU)</option>
+                                    </select>
+                                    <div class="d-flex justify-content-between mt-2">
+                                        <span>Cargo Capacity:</span>
+                                        <span id="cargo-capacity">168 SCU</span>
+                                    </div>
+                                </div>
+
+                                <!-- Starting Location -->
+                                <div class="mb-4">
+                                    <h4>Starting Location</h4>
+                                    <select id="start-location" class="form-select">
+                                        <option value="" disabled selected>Select a location</option>
+                                        <!-- Populated by JavaScript -->
+                                    </select>
+                                </div>
+
+                                <!-- Add Missions -->
+                                <div class="mb-4">
+                                    <h4>Missions</h4>
+                                    <div id="missions-container">
+                                        <!-- Missions will be added here -->
+                                    </div>
+                                    
+                                    <button id="add-mission-btn" class="btn btn-primary mt-2 w-100">Add Mission</button>
+                                </div>
+
+                                <!-- Calculate Route -->
+                                <div class="d-grid gap-2">
+                                    <button id="calculate-route-btn" class="btn btn-success btn-lg">Calculate Optimal Route</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Map and Results -->
+                <div class="col-md-8">
+                    <div class="map-container">
+                        <!-- Star Citizen Map -->
+                        <div id="stanton-map"></div>
+
+                        <!-- Route Results -->
+                        <div id="route-results" class="d-none">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3>Optimal Route</h3>
+                                </div>
+                                <div class="card-body">
+                                    <div class="route-summary">
+                                        <p><strong>Total Distance:</strong> <span id="total-distance">0</span> km</p>
+                                        <p><strong>Number of Stops:</strong> <span id="stop-count">0</span></p>
+                                        <p><strong>Total Payout:</strong> <span id="total-payout">0</span> aUEC</p>
+                                    </div>
+                                    <div class="route-details">
+                                        <h4>Route Steps</h4>
+                                        <ol id="route-steps">
+                                            <!-- Route steps will be added here -->
+                                        </ol>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <footer class="col-12 py-2 text-center text-white">
+                <p>Created for Star Citizen cargo haulers. Not affiliated with Cloud Imperium Games.</p>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Mission Template (Hidden) -->
+    <template id="mission-template">
+        <div class="mission-item card mb-2">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h5 class="mission-number mb-0">Mission 1</h5>
+                    <button class="btn btn-sm btn-danger remove-mission-btn">Remove</button>
+                </div>
+                <div class="row g-2">
+                    <div class="col-12">
+                        <label class="form-label">Pickup Location</label>
+                        <select class="form-select pickup-location">
+                            <option value="" disabled selected>Select location</option>
+                            <!-- Populated by JavaScript -->
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Cargo Type</label>
+                        <select class="form-select cargo-type">
+                            <!-- Populated by JavaScript with Star Citizen cargo types -->
+                        </select>
+                    </div>
+                    <div class="col-12 dropoff-container">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <label class="form-label">Dropoff Location(s)</label>
+                            <button type="button" class="btn btn-sm btn-info add-dropoff-btn">+ Add Dropoff</button>
+                        </div>
+                        <div class="dropoff-locations">
+                            <div class="dropoff-item mb-2">
+                                <div class="row g-2">
+                                    <div class="col-7">
+                                        <select class="form-select dropoff-location">
+                                            <option value="" disabled selected>Select location</option>
+                                            <!-- Populated by JavaScript -->
+                                        </select>
+                                    </div>
+                                    <div class="col-5">
+                                        <select class="form-select dropoff-cargo-type">
+                                            <!-- Populated by JavaScript with Star Citizen cargo types -->
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-8">
+                        <label class="form-label">Cargo Amount (SCU)</label>
+                        <input type="number" class="form-control cargo-amount" min="1" value="10">
+                    </div>
+                    <div class="col-4">
+                        <label class="form-label">Payout (aUEC)</label>
+                        <input type="number" class="form-control mission-payout" min="0" value="0">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="/static/js/main.js"></script>
+</body>
+</html> 

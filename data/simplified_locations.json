@@ -1,0 +1,162 @@
+[
+  {
+    "name": "ArcCorp",
+    "type": "planet",
+    "coordinates": [
+      18.371812,
+      2.652349
+    ]
+  },
+  {
+    "name": "Area18",
+    "type": "landing_zone",
+    "coordinates": [
+      18.361812,
+      2.662349
+    ]
+  },
+  {
+    "name": "Baijini Point",
+    "type": "station",
+    "coordinates": [
+      18.375812,
+      2.692349
+    ]
+  },
+  {
+    "name": "Crusader",
+    "type": "planet",
+    "coordinates": [
+      0.0,
+      0.0
+    ]
+  },
+  {
+    "name": "Orison",
+    "type": "landing_zone",
+    "coordinates": [
+      0.0,
+      0.005
+    ]
+  },
+  {
+    "name": "Port Olisar",
+    "type": "station",
+    "coordinates": [
+      0.0,
+      0.08
+    ]
+  },
+  {
+    "name": "Hurston",
+    "type": "planet",
+    "coordinates": [
+      -16.550615,
+      -1.652349
+    ]
+  },
+  {
+    "name": "Lorville",
+    "type": "landing_zone",
+    "coordinates": [
+      -16.540615,
+      -1.642349
+    ]
+  },
+  {
+    "name": "Everus Harbor",
+    "type": "station",
+    "coordinates": [
+      -16.555615,
+      -1.602349
+    ]
+  },
+  {
+    "name": "microTech",
+    "type": "planet",
+    "coordinates": [
+      22.999592,
+      37.919954
+    ]
+  },
+  {
+    "name": "New Babbage",
+    "type": "landing_zone",
+    "coordinates": [
+      22.989592,
+      37.929954
+    ]
+  },
+  {
+    "name": "Port Tressler",
+    "type": "station",
+    "coordinates": [
+      22.999592,
+      37.989954
+    ]
+  },
+  {
+    "name": "Cellin",
+    "type": "moon",
+    "coordinates": [
+      0.3,
+      0.0
+    ]
+  },
+  {
+    "name": "Daymar",
+    "type": "moon",
+    "coordinates": [
+      0.0,
+      0.5
+    ]
+  },
+  {
+    "name": "Yela",
+    "type": "moon",
+    "coordinates": [
+      -0.4,
+      -0.2
+    ]
+  },
+  {
+    "name": "CRU-L1",
+    "type": "lagrange",
+    "coordinates": [
+      5.0,
+      0.0
+    ]
+  },
+  {
+    "name": "CRU-L5",
+    "type": "lagrange",
+    "coordinates": [
+      -2.5,
+      4.330127
+    ]
+  },
+  {
+    "name": "ARC-L1",
+    "type": "lagrange",
+    "coordinates": [
+      12.0,
+      1.5
+    ]
+  },
+  {
+    "name": "HUR-L1",
+    "type": "lagrange",
+    "coordinates": [
+      -12.0,
+      -1.5
+    ]
+  },
+  {
+    "name": "MIC-L1",
+    "type": "lagrange",
+    "coordinates": [
+      18.0,
+      30.0
+    ]
+  }
+]

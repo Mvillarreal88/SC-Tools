@@ -1,0 +1,162 @@
+[
+  {
+    "name": "ArcCorp",
+    "type": "planet",
+    "parent": null,
+    "x": 18371812,
+    "y": 0,
+    "z": 2652349
+  },
+  {
+    "name": "Area18",
+    "type": "landing_zone",
+    "parent": "ArcCorp",
+    "x": 18361812,
+    "y": 10000,
+    "z": 2662349
+  },
+  {
+    "name": "Baijini Point",
+    "type": "station",
+    "parent": "ArcCorp",
+    "x": 18375812,
+    "y": 50000,
+    "z": 2692349
+  },
+  {
+    "name": "Crusader",
+    "type": "planet",
+    "parent": null,
+    "x": 0,
+    "y": 0,
+    "z": 0
+  },
+  {
+    "name": "Orison",
+    "type": "landing_zone",
+    "parent": "Crusader",
+    "x": 0,
+    "y": 5000,
+    "z": 5000
+  },
+  {
+    "name": "Port Olisar",
+    "type": "station",
+    "parent": "Crusader",
+    "x": 0,
+    "y": 80000,
+    "z": 80000
+  },
+  {
+    "name": "Hurston",
+    "type": "planet",
+    "parent": null,
+    "x": -16550615,
+    "y": 0,
+    "z": -1652349
+  },
+  {
+    "name": "Lorville",
+    "type": "landing_zone",
+    "parent": "Hurston",
+    "x": -16540615,
+    "y": 5000,
+    "z": -1642349
+  },
+  {
+    "name": "Everus Harbor",
+    "type": "station",
+    "parent": "Hurston",
+    "x": -16555615,
+    "y": 60000,
+    "z": -1602349
+  },
+  {
+    "name": "microTech",
+    "type": "planet",
+    "parent": null,
+    "x": 22999592,
+    "y": 0,
+    "z": 37919954
+  },
+  {
+    "name": "New Babbage",
+    "type": "landing_zone",
+    "parent": "microTech",
+    "x": 22989592,
+    "y": 5000,
+    "z": 37929954
+  },
+  {
+    "name": "Port Tressler",
+    "type": "station",
+    "parent": "microTech",
+    "x": 22999592,
+    "y": 70000,
+    "z": 37989954
+  },
+  {
+    "name": "Cellin",
+    "type": "moon",
+    "parent": "Crusader",
+    "x": 300000,
+    "y": 0,
+    "z": 0
+  },
+  {
+    "name": "Daymar",
+    "type": "moon",
+    "parent": "Crusader",
+    "x": 0,
+    "y": 0,
+    "z": 500000
+  },
+  {
+    "name": "Yela",
+    "type": "moon",
+    "parent": "Crusader",
+    "x": -400000,
+    "y": 0,
+    "z": -200000
+  },
+  {
+    "name": "CRU-L1",
+    "type": "lagrange",
+    "parent": null,
+    "x": 5000000,
+    "y": 0,
+    "z": 0
+  },
+  {
+    "name": "CRU-L5",
+    "type": "lagrange",
+    "parent": null,
+    "x": -2500000,
+    "y": 0,
+    "z": 4330127
+  },
+  {
+    "name": "ARC-L1",
+    "type": "lagrange",
+    "parent": null,
+    "x": 12000000,
+    "y": 0,
+    "z": 1500000
+  },
+  {
+    "name": "HUR-L1",
+    "type": "lagrange",
+    "parent": null,
+    "x": -12000000,
+    "y": 0,
+    "z": -1500000
+  },
+  {
+    "name": "MIC-L1",
+    "type": "lagrange",
+    "parent": null,
+    "x": 18000000,
+    "y": 0,
+    "z": 30000000
+  }
+]
