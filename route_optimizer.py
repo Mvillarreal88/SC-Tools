@@ -190,18 +190,17 @@ class RouteOptimizer:
                     distance = self.get_distance(loc_a, loc_b)
                     G.add_edge(loc_a, loc_b, weight=distance)
         
-        # Now we need to solve a problem similar to the Vehicle Routing Problem
-        # For each mission, we need to visit the pickup before any of the dropoffs
+        # Now we'll use an improved algorithm that considers the overall journey efficiency
+        # rather than just local optimizations
         
-        # Start with a greedy approach, considering cargo capacity
         current_location = start_location
         current_cargo = 0
         route = [current_location]
         mission_order = []
         cargo_at_steps = [0]
         total_distance = 0
-        total_payout = 0.0  # Track the total payout
-        cargo_types_at_steps = [{}]  # Track cargo types at each step
+        total_payout = 0.0
+        cargo_types_at_steps = [{}]
         
         # Make a copy of missions to track which ones are pending
         pending_missions = missions.copy()
@@ -210,26 +209,119 @@ class RouteOptimizer:
         # Keep track of missions that have been picked up but not dropped off
         in_progress_missions = []
         
+        # Calculate the profit per distance ratio for each mission to use in scoring
+        mission_efficiency = {}
+        for mission in missions:
+            pickup_to_dropoffs_distance = 0
+            for dropoff in mission.dropoffs:
+                pickup_to_dropoffs_distance += self.get_distance(mission.pickup, dropoff)
+            
+            # Avoid division by zero
+            if pickup_to_dropoffs_distance == 0:
+                pickup_to_dropoffs_distance = 1
+                
+            # Calculate efficiency as payout per distance unit
+            efficiency = mission.payout / pickup_to_dropoffs_distance if pickup_to_dropoffs_distance > 0 else 0
+            mission_efficiency[mission.mission_id] = efficiency
+        
         # Continue until all missions are completed
         while pending_missions or in_progress_missions:
-            best_option = None
-            best_distance = float('inf')
+            # Check for dropoffs at current location (always prioritize dropoffs)
+            local_dropoffs = [mission for mission in in_progress_missions 
+                            if mission.get_next_dropoff() == current_location]
             
-            # Consider picking up any pending mission
+            # Check for pickups at current location
+            local_pickups = [mission for mission in pending_missions 
+                           if mission.pickup == current_location and 
+                           current_cargo + mission.cargo_scu <= self.ship_capacity]
+            
+            # Process dropoffs first to free up cargo space
+            if local_dropoffs:
+                mission = local_dropoffs[0]
+                current_cargo_type = mission.get_current_cargo_type()
+                cargo_for_dropoff = mission.get_current_cargo_amount()
+                current_cargo -= cargo_for_dropoff
+                
+                # Update cargo types
+                current_cargo_types = cargo_types_at_steps[-1].copy()
+                if current_cargo_type in current_cargo_types:
+                    current_cargo_types[current_cargo_type] = max(0, current_cargo_types[current_cargo_type] - cargo_for_dropoff)
+                    if current_cargo_types[current_cargo_type] == 0:
+                        del current_cargo_types[current_cargo_type]
+                        
+                cargo_types_at_steps.append(current_cargo_types)
+                mission_order.append(f"Dropoff {mission.mission_id} at {current_location} - {current_cargo_type}")
+                cargo_at_steps.append(current_cargo)
+                
+                # Update mission status
+                has_more_dropoffs = mission.advance_dropoff()
+                if not has_more_dropoffs:
+                    in_progress_missions.remove(mission)
+                    completed_missions.append(mission)
+                    total_payout += mission.payout
+                
+                continue  # Process another dropoff if available
+            
+            # Process pickups after all dropoffs are done
+            if local_pickups:
+                mission = local_pickups[0]
+                pending_missions.remove(mission)
+                in_progress_missions.append(mission)
+                current_cargo += mission.cargo_scu
+                
+                # Update cargo types
+                current_cargo_types = cargo_types_at_steps[-1].copy()
+                if mission.cargo_type in current_cargo_types:
+                    current_cargo_types[mission.cargo_type] += mission.cargo_scu
+                else:
+                    current_cargo_types[mission.cargo_type] = mission.cargo_scu
+                    
+                cargo_types_at_steps.append(current_cargo_types)
+                mission_order.append(f"Pickup {mission.mission_id} - {mission.cargo_type}")
+                cargo_at_steps.append(current_cargo)
+                
+                continue  # Process another pickup if available
+            
+            # If no local operations, find the next best location to visit
+            # This now uses a more comprehensive scoring system
+            
+            best_option = None
+            best_score = float('-inf')
+            
+            # Score both pickups and dropoffs based on multiple factors
             for mission in pending_missions:
                 if current_cargo + mission.cargo_scu <= self.ship_capacity:
-                    distance = self.get_distance(current_location, mission.pickup)
-                    if distance < best_distance:
-                        best_distance = distance
+                    score = self._calculate_option_score(
+                        current_location,
+                        mission.pickup,
+                        "pickup",
+                        mission,
+                        mission_efficiency.get(mission.mission_id, 0),
+                        current_cargo,
+                        self.ship_capacity,
+                        in_progress_missions
+                    )
+                    
+                    if score > best_score:
+                        best_score = score
                         best_option = ("pickup", mission)
             
-            # Consider dropping off any in-progress mission
             for mission in in_progress_missions:
                 next_dropoff = mission.get_next_dropoff()
                 if next_dropoff:
-                    distance = self.get_distance(current_location, next_dropoff)
-                    if distance < best_distance:
-                        best_distance = distance
+                    score = self._calculate_option_score(
+                        current_location,
+                        next_dropoff,
+                        "dropoff",
+                        mission,
+                        mission_efficiency.get(mission.mission_id, 0),
+                        current_cargo,
+                        self.ship_capacity,
+                        in_progress_missions
+                    )
+                    
+                    if score > best_score:
+                        best_score = score
                         best_option = ("dropoff", mission)
             
             # If no valid option, it means we can't complete all missions with the given capacity
@@ -246,50 +338,59 @@ class RouteOptimizer:
             if action == "pickup":
                 pending_missions.remove(mission)
                 in_progress_missions.append(mission)
+                
+                # Calculate and add distance
+                distance = self.get_distance(current_location, mission.pickup)
+                total_distance += distance
+                
+                # Update location and cargo
+                route.append(mission.pickup)
                 current_location = mission.pickup
                 current_cargo += mission.cargo_scu
-                route.append(current_location)
-                cargo_at_steps.append(current_cargo)
                 
-                # Track cargo types
+                # Update tracking data
                 current_cargo_types = cargo_types_at_steps[-1].copy()
                 if mission.cargo_type in current_cargo_types:
                     current_cargo_types[mission.cargo_type] += mission.cargo_scu
                 else:
                     current_cargo_types[mission.cargo_type] = mission.cargo_scu
+                    
                 cargo_types_at_steps.append(current_cargo_types)
-                
                 mission_order.append(f"Pickup {mission.mission_id} - {mission.cargo_type}")
-                total_distance += best_distance
-            else:  # dropoff
-                dropoff_location = mission.get_next_dropoff()
-                current_location = dropoff_location
-                # Get the cargo type for this specific dropoff
-                current_cargo_type = mission.get_current_cargo_type()
-                
-                # Use the specific cargo amount for this dropoff
-                cargo_for_dropoff = mission.get_current_cargo_amount()
-                current_cargo -= cargo_for_dropoff
-                route.append(current_location)
                 cargo_at_steps.append(current_cargo)
                 
-                # Track cargo types
+            else:  # dropoff
+                dropoff_location = mission.get_next_dropoff()
+                
+                # Calculate and add distance
+                distance = self.get_distance(current_location, dropoff_location)
+                total_distance += distance
+                
+                # Update location and cargo
+                route.append(dropoff_location)
+                current_location = dropoff_location
+                
+                # Process the dropoff
+                current_cargo_type = mission.get_current_cargo_type()
+                cargo_for_dropoff = mission.get_current_cargo_amount()
+                current_cargo -= cargo_for_dropoff
+                
+                # Update tracking data
                 current_cargo_types = cargo_types_at_steps[-1].copy()
                 if current_cargo_type in current_cargo_types:
                     current_cargo_types[current_cargo_type] = max(0, current_cargo_types[current_cargo_type] - cargo_for_dropoff)
                     if current_cargo_types[current_cargo_type] == 0:
                         del current_cargo_types[current_cargo_type]
+                        
                 cargo_types_at_steps.append(current_cargo_types)
-                
                 mission_order.append(f"Dropoff {mission.mission_id} at {dropoff_location} - {current_cargo_type}")
-                total_distance += best_distance
+                cargo_at_steps.append(current_cargo)
                 
-                # Check if mission is complete after this dropoff
+                # Update mission status
                 has_more_dropoffs = mission.advance_dropoff()
                 if not has_more_dropoffs:
                     in_progress_missions.remove(mission)
                     completed_missions.append(mission)
-                    # Add the mission payout when it's complete
                     total_payout += mission.payout
         
         return {
@@ -301,6 +402,53 @@ class RouteOptimizer:
             "total_payout": total_payout,
             "completed_missions": [m.mission_id for m in completed_missions]
         }
+    
+    def _calculate_option_score(self, current_location, target_location, action_type, mission, 
+                                efficiency, current_cargo, max_cargo, in_progress_missions):
+        """
+        Calculate a comprehensive score for a potential next action.
+        Higher scores are better options.
+        """
+        # Get the base distance score (negative because shorter is better)
+        distance = self.get_distance(current_location, target_location)
+        distance_score = -distance if distance > 0 else 0
+        
+        # Efficiency score (payout per distance)
+        efficiency_score = efficiency * 10000  # Scale factor to make this comparable
+        
+        # Cargo utilization factors
+        cargo_utilization = current_cargo / max_cargo if max_cargo > 0 else 0
+        
+        # Different scoring strategies for pickups vs dropoffs
+        if action_type == "pickup":
+            # Prioritize pickups when we have low cargo utilization
+            # But avoid pickups when we're near capacity
+            cargo_factor = 1 - cargo_utilization  # Higher score when cargo is low
+            
+            # Look ahead - consider if we have a dropoff at this pickup location
+            # This encourages dropping off cargo before picking up new cargo at the same location
+            has_dropoff_here = any(m.get_next_dropoff() == target_location for m in in_progress_missions)
+            dropoff_bonus = 5000 if has_dropoff_here else 0
+            
+            # Discourage pickups when we're nearly full
+            capacity_factor = 0 if current_cargo + mission.cargo_scu > max_cargo else 1
+            
+            return distance_score + efficiency_score + (cargo_factor * 2000) + dropoff_bonus + (capacity_factor * 3000)
+            
+        else:  # dropoff
+            # Prioritize dropoffs when we have high cargo utilization
+            cargo_factor = cargo_utilization  # Higher score when cargo is high
+            
+            # Add an urgency factor - prioritize dropoffs that are filling up our cargo hold
+            cargo_amount = mission.get_current_cargo_amount()
+            cargo_urgency = cargo_amount / max_cargo if max_cargo > 0 else 0
+            
+            # Look ahead - consider if we have a pickup at this dropoff location
+            # This encourages efficient operations at the same location
+            has_pickup_here = any(m.pickup == target_location for m in in_progress_missions)
+            pickup_bonus = 3000 if has_pickup_here else 0
+            
+            return distance_score + efficiency_score + (cargo_factor * 3000) + (cargo_urgency * 4000) + pickup_bonus
 
 
 def calculate_route(missions: List[Dict[str, Any]], start_location: str, ship_capacity: float = DEFAULT_SHIP_CAPACITY) -> Dict[str, Any]:

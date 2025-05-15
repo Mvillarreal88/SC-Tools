@@ -18,7 +18,7 @@ def initialize_data():
     if not os.path.exists('data'):
         print("Creating data directory...")
         os.makedirs('data', exist_ok=True)
-    
+
     # Check if location data files exist
     if not (os.path.exists('data/simplified_locations.json') and
             os.path.exists('data/locations.json') and
@@ -93,7 +93,7 @@ def optimize_route():
         missions = data.get('missions', [])
         start_location = data.get('start_location')
         ship_id = data.get('ship_id', 'taurus')
-        
+            
         print(f"Received optimize request: {json.dumps(data)}")
         
         # Set ship capacity based on selected ship (default to Taurus)

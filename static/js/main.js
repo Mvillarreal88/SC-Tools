@@ -533,20 +533,20 @@ function setupEventListeners() {
         // Remove mission button
         if (event.target.classList.contains('remove-mission-btn')) {
             const missionItem = event.target.closest('.mission-item');
-            missionItem.remove();
-            updateMissionNumbers();
-        }
+                missionItem.remove();
+                updateMissionNumbers();
+            }
         
         // Add dropoff location button
         if (event.target.classList.contains('add-dropoff-btn')) {
             const missionItem = event.target.closest('.mission-item');
-            addDropoffLocation(missionItem);
-        }
+                addDropoffLocation(missionItem);
+            }
         
         // Remove dropoff location button
         if (event.target.classList.contains('remove-dropoff-btn')) {
             const dropoffItem = event.target.closest('.dropoff-item');
-            dropoffItem.remove();
+                dropoffItem.remove();
         }
     });
 }
@@ -575,7 +575,7 @@ function addMission() {
     
     // Populate pickup location
     const pickupSelect = missionItem.querySelector('.pickup-location');
-    updateLocationSelect(pickupSelect);
+        updateLocationSelect(pickupSelect);
     
     // Add event listeners for this mission
     setupMissionEvents(missionItem);
