@@ -1,29 +1,5 @@
 [
   {
-    "name": "ArcCorp",
-    "type": "planet",
-    "coordinates": [
-      18.371812,
-      2.652349
-    ]
-  },
-  {
-    "name": "Area18",
-    "type": "landing_zone",
-    "coordinates": [
-      18.361812,
-      2.662349
-    ]
-  },
-  {
-    "name": "Baijini Point",
-    "type": "station",
-    "coordinates": [
-      18.375812,
-      2.692349
-    ]
-  },
-  {
     "name": "Crusader",
     "type": "planet",
     "coordinates": [
@@ -45,6 +21,174 @@
     "coordinates": [
       0.0,
       0.08
+    ]
+  },
+  {
+    "name": "CRU-L1 Ambitious Dream Station",
+    "type": "station",
+    "coordinates": [
+      5.0,
+      0.0
+    ]
+  },
+  {
+    "name": "Grim HEX",
+    "type": "station",
+    "coordinates": [
+      -0.2,
+      -0.1
+    ]
+  },
+  {
+    "name": "Cellin",
+    "type": "moon",
+    "coordinates": [
+      0.3,
+      0.0
+    ]
+  },
+  {
+    "name": "Galette Family Farms",
+    "type": "outpost",
+    "coordinates": [
+      0.31,
+      0.015
+    ]
+  },
+  {
+    "name": "Hickes Research Outpost",
+    "type": "outpost",
+    "coordinates": [
+      0.305,
+      0.02
+    ]
+  },
+  {
+    "name": "Terra Mills Hydro Farm",
+    "type": "outpost",
+    "coordinates": [
+      0.295,
+      -0.008
+    ]
+  },
+  {
+    "name": "Tram & Meyers Mining",
+    "type": "outpost",
+    "coordinates": [
+      0.315,
+      0.012
+    ]
+  },
+  {
+    "name": "Daymar",
+    "type": "moon",
+    "coordinates": [
+      0.0,
+      0.5
+    ]
+  },
+  {
+    "name": "ArcCorp Mining Area 141",
+    "type": "outpost",
+    "coordinates": [
+      0.01,
+      0.505
+    ]
+  },
+  {
+    "name": "Bountiful Harvest Hydroponics",
+    "type": "outpost",
+    "coordinates": [
+      -0.005,
+      0.51
+    ]
+  },
+  {
+    "name": "Kudre Ore",
+    "type": "outpost",
+    "coordinates": [
+      0.005,
+      0.49
+    ]
+  },
+  {
+    "name": "Shubin Mining Facility SCD-1",
+    "type": "outpost",
+    "coordinates": [
+      -0.008,
+      0.495
+    ]
+  },
+  {
+    "name": "Brio's Breaker Yard",
+    "type": "outpost",
+    "coordinates": [
+      0.012,
+      0.507
+    ]
+  },
+  {
+    "name": "Nuen Waste Management",
+    "type": "outpost",
+    "coordinates": [
+      -0.007,
+      0.486
+    ]
+  },
+  {
+    "name": "Yela",
+    "type": "moon",
+    "coordinates": [
+      -0.4,
+      -0.2
+    ]
+  },
+  {
+    "name": "ArcCorp Mining Area 157",
+    "type": "outpost",
+    "coordinates": [
+      -0.405,
+      -0.195
+    ]
+  },
+  {
+    "name": "Benson Mining Outpost",
+    "type": "outpost",
+    "coordinates": [
+      -0.395,
+      -0.205
+    ]
+  },
+  {
+    "name": "Deakins Research Outpost",
+    "type": "outpost",
+    "coordinates": [
+      -0.41,
+      -0.21
+    ]
+  },
+  {
+    "name": "Jumptown",
+    "type": "outpost",
+    "coordinates": [
+      -0.39,
+      -0.19
+    ]
+  },
+  {
+    "name": "NT-999 XX",
+    "type": "outpost",
+    "coordinates": [
+      -0.385,
+      -0.21
+    ]
+  },
+  {
+    "name": "Kosso Basin",
+    "type": "outpost",
+    "coordinates": [
+      -0.415,
+      -0.188
     ]
   },
   {
@@ -72,6 +216,278 @@
     ]
   },
   {
+    "name": "HUR-L1 Green Glade Station",
+    "type": "station",
+    "coordinates": [
+      -12.0,
+      -1.5
+    ]
+  },
+  {
+    "name": "HUR-L2 Stormbreaker Station",
+    "type": "station",
+    "coordinates": [
+      -20.0,
+      -1.652349
+    ]
+  },
+  {
+    "name": "Teasa Spaceport",
+    "type": "spaceport",
+    "coordinates": [
+      -16.539615,
+      -1.641349
+    ]
+  },
+  {
+    "name": "Aberdeen",
+    "type": "moon",
+    "coordinates": [
+      -16.750615,
+      -1.752349
+    ]
+  },
+  {
+    "name": "HDMS Anderson",
+    "type": "outpost",
+    "coordinates": [
+      -16.755615,
+      -1.747349
+    ]
+  },
+  {
+    "name": "HDMS Norgaard",
+    "type": "outpost",
+    "coordinates": [
+      -16.745615,
+      -1.757349
+    ]
+  },
+  {
+    "name": "Klescher Rehabilitation Facility",
+    "type": "outpost",
+    "coordinates": [
+      -16.760615,
+      -1.762349
+    ]
+  },
+  {
+    "name": "Arial",
+    "type": "moon",
+    "coordinates": [
+      -16.350615,
+      -1.552349
+    ]
+  },
+  {
+    "name": "HDMS Bezdek",
+    "type": "outpost",
+    "coordinates": [
+      -16.355615,
+      -1.547349
+    ]
+  },
+  {
+    "name": "HDMS Lathan",
+    "type": "outpost",
+    "coordinates": [
+      -16.345615,
+      -1.557349
+    ]
+  },
+  {
+    "name": "Ita",
+    "type": "moon",
+    "coordinates": [
+      -16.650615,
+      -1.452349
+    ]
+  },
+  {
+    "name": "HDMS Ryder",
+    "type": "outpost",
+    "coordinates": [
+      -16.655615,
+      -1.447349
+    ]
+  },
+  {
+    "name": "HDMS Woodruff",
+    "type": "outpost",
+    "coordinates": [
+      -16.645615,
+      -1.457349
+    ]
+  },
+  {
+    "name": "Magda",
+    "type": "moon",
+    "coordinates": [
+      -16.450615,
+      -1.852349
+    ]
+  },
+  {
+    "name": "HDMS Hahn",
+    "type": "outpost",
+    "coordinates": [
+      -16.455615,
+      -1.847349
+    ]
+  },
+  {
+    "name": "HDMS Perlman",
+    "type": "outpost",
+    "coordinates": [
+      -16.445615,
+      -1.857349
+    ]
+  },
+  {
+    "name": "ArcCorp",
+    "type": "planet",
+    "coordinates": [
+      18.371812,
+      2.652349
+    ]
+  },
+  {
+    "name": "Area18",
+    "type": "landing_zone",
+    "coordinates": [
+      18.361812,
+      2.662349
+    ]
+  },
+  {
+    "name": "Baijini Point",
+    "type": "station",
+    "coordinates": [
+      18.375812,
+      2.692349
+    ]
+  },
+  {
+    "name": "ARC-L1 Conn Station",
+    "type": "station",
+    "coordinates": [
+      12.0,
+      1.5
+    ]
+  },
+  {
+    "name": "Riker Memorial Spaceport",
+    "type": "spaceport",
+    "coordinates": [
+      18.362812,
+      2.663349
+    ]
+  },
+  {
+    "name": "Lyria",
+    "type": "moon",
+    "coordinates": [
+      18.571812,
+      2.752349
+    ]
+  },
+  {
+    "name": "Loveridge Mineral Reserve",
+    "type": "outpost",
+    "coordinates": [
+      18.576812,
+      2.747349
+    ]
+  },
+  {
+    "name": "Humboldt Mines",
+    "type": "outpost",
+    "coordinates": [
+      18.566812,
+      2.757349
+    ]
+  },
+  {
+    "name": "Shubin Mining Facility SAL-2",
+    "type": "outpost",
+    "coordinates": [
+      18.581812,
+      2.762349
+    ]
+  },
+  {
+    "name": "The Orphanage",
+    "type": "outpost",
+    "coordinates": [
+      18.561812,
+      2.742349
+    ]
+  },
+  {
+    "name": "Paradise Cove",
+    "type": "outpost",
+    "coordinates": [
+      18.568812,
+      2.749349
+    ]
+  },
+  {
+    "name": "Dulli Research Facility",
+    "type": "outpost",
+    "coordinates": [
+      18.585812,
+      2.755349
+    ]
+  },
+  {
+    "name": "Wala",
+    "type": "moon",
+    "coordinates": [
+      18.171812,
+      2.552349
+    ]
+  },
+  {
+    "name": "ArcCorp Mining Area 045",
+    "type": "outpost",
+    "coordinates": [
+      18.176812,
+      2.547349
+    ]
+  },
+  {
+    "name": "ArcCorp Mining Area 048",
+    "type": "outpost",
+    "coordinates": [
+      18.166812,
+      2.557349
+    ]
+  },
+  {
+    "name": "ArcCorp Mining Area 056",
+    "type": "outpost",
+    "coordinates": [
+      18.181812,
+      2.562349
+    ]
+  },
+  {
+    "name": "ArcCorp Mining Area 061",
+    "type": "outpost",
+    "coordinates": [
+      18.161812,
+      2.542349
+    ]
+  },
+  {
+    "name": "Samson & Son's Salvage Center",
+    "type": "outpost",
+    "coordinates": [
+      18.171812,
+      2.552349
+    ]
+  },
+  {
     "name": "microTech",
     "type": "planet",
     "coordinates": [
@@ -96,67 +512,227 @@
     ]
   },
   {
-    "name": "Cellin",
+    "name": "MIC-L1 Shallow Frontier Station",
+    "type": "station",
+    "coordinates": [
+      18.0,
+      30.0
+    ]
+  },
+  {
+    "name": "Aspire Grand",
+    "type": "spaceport",
+    "coordinates": [
+      22.988592,
+      37.930954
+    ]
+  },
+  {
+    "name": "Calliope",
     "type": "moon",
     "coordinates": [
-      0.3,
+      23.199592,
+      38.119954
+    ]
+  },
+  {
+    "name": "Rayari Deltana Research Outpost",
+    "type": "outpost",
+    "coordinates": [
+      23.204592,
+      38.114954
+    ]
+  },
+  {
+    "name": "Shubin Mining Facility SMO-18",
+    "type": "outpost",
+    "coordinates": [
+      23.194592,
+      38.124954
+    ]
+  },
+  {
+    "name": "Nuiqsut Research Facility",
+    "type": "outpost",
+    "coordinates": [
+      23.210592,
+      38.110954
+    ]
+  },
+  {
+    "name": "Clio",
+    "type": "moon",
+    "coordinates": [
+      22.799592,
+      37.719954
+    ]
+  },
+  {
+    "name": "Shubin Mining Facility SMO-13",
+    "type": "outpost",
+    "coordinates": [
+      22.804592,
+      37.714954
+    ]
+  },
+  {
+    "name": "Rayari Anvik Research Outpost",
+    "type": "outpost",
+    "coordinates": [
+      22.794592,
+      37.724954
+    ]
+  },
+  {
+    "name": "Druglab Paradise Cove",
+    "type": "outpost",
+    "coordinates": [
+      22.809592,
+      37.709954
+    ]
+  },
+  {
+    "name": "Euterpe",
+    "type": "moon",
+    "coordinates": [
+      23.099592,
+      37.819954
+    ]
+  },
+  {
+    "name": "Shubin Mining Facility SMO-22",
+    "type": "outpost",
+    "coordinates": [
+      23.104592,
+      37.814954
+    ]
+  },
+  {
+    "name": "Bud's Growery",
+    "type": "outpost",
+    "coordinates": [
+      23.089592,
+      37.829954
+    ]
+  },
+  {
+    "name": "CRU-L2 Shallow Fields Station",
+    "type": "station",
+    "coordinates": [
+      -5.0,
       0.0
     ]
   },
   {
-    "name": "Daymar",
-    "type": "moon",
+    "name": "CRU-L3 Wide Forest Station",
+    "type": "station",
     "coordinates": [
       0.0,
-      0.5
+      -5.0
     ]
   },
   {
-    "name": "Yela",
-    "type": "moon",
-    "coordinates": [
-      -0.4,
-      -0.2
-    ]
-  },
-  {
-    "name": "CRU-L1",
-    "type": "lagrange",
+    "name": "CRU-L4 Shallow Fields Station",
+    "type": "station",
     "coordinates": [
       5.0,
       0.0
     ]
   },
   {
-    "name": "CRU-L5",
-    "type": "lagrange",
+    "name": "CRU-L5 Beautiful Glen Station",
+    "type": "station",
     "coordinates": [
       -2.5,
       4.330127
     ]
   },
   {
-    "name": "ARC-L1",
-    "type": "lagrange",
+    "name": "HUR-L3 Red Festival Station",
+    "type": "station",
+    "coordinates": [
+      -16.550615,
+      6.5
+    ]
+  },
+  {
+    "name": "HUR-L4 Melodic Retreat Station",
+    "type": "station",
+    "coordinates": [
+      -10.0,
+      -10.0
+    ]
+  },
+  {
+    "name": "HUR-L5 Faithful Retreat Station",
+    "type": "station",
+    "coordinates": [
+      -21.0,
+      3.0
+    ]
+  },
+  {
+    "name": "ARC-L2 Wide Forest Station",
+    "type": "station",
+    "coordinates": [
+      24.0,
+      2.652349
+    ]
+  },
+  {
+    "name": "ARC-L3 Shallow Fields Station",
+    "type": "station",
+    "coordinates": [
+      18.371812,
+      -3.5
+    ]
+  },
+  {
+    "name": "ARC-L4 Stone Henge Station",
+    "type": "station",
     "coordinates": [
       12.0,
-      1.5
+      3.5
     ]
   },
   {
-    "name": "HUR-L1",
-    "type": "lagrange",
+    "name": "ARC-L5 Bountiful Harvest Station",
+    "type": "station",
     "coordinates": [
-      -12.0,
-      -1.5
+      22.0,
+      5.0
     ]
   },
   {
-    "name": "MIC-L1",
-    "type": "lagrange",
+    "name": "MIC-L2 Torchbearer Station",
+    "type": "station",
+    "coordinates": [
+      28.0,
+      37.919954
+    ]
+  },
+  {
+    "name": "MIC-L3 Harmonious Haven Station",
+    "type": "station",
+    "coordinates": [
+      22.999592,
+      32.0
+    ]
+  },
+  {
+    "name": "MIC-L4 Outpost Station",
+    "type": "station",
     "coordinates": [
       18.0,
-      30.0
+      40.0
+    ]
+  },
+  {
+    "name": "MIC-L5 Steel Hollow Station",
+    "type": "station",
+    "coordinates": [
+      26.0,
+      41.0
     ]
   }
 ]

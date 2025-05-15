@@ -12,13 +12,24 @@ from route_optimizer import calculate_route, DEFAULT_SHIP_CAPACITY
 app = Flask(__name__, static_folder='static', template_folder='templates')
 CORS(app)  # Enable CORS for all routes
 
-# Ensure data directory exists
-if not os.path.exists('data'):
-    os.makedirs('data')
+# Ensure data directory exists and contains the required files
+def initialize_data():
+    """Initialize data files if they don't exist."""
+    if not os.path.exists('data'):
+        print("Creating data directory...")
+        os.makedirs('data', exist_ok=True)
+    
+    # Check if location data files exist
+    if not (os.path.exists('data/simplified_locations.json') and
+            os.path.exists('data/locations.json') and
+            os.path.exists('data/distance_matrix.json')):
+        print("Initializing location data...")
+        download_and_process_map_data()
+    else:
+        print("Location data already exists.")
 
-# Always reload location data on startup to ensure it's fresh
-print("Initializing location data...")
-download_and_process_map_data()
+# Initialize data at startup
+initialize_data()
 
 
 @app.route('/')
@@ -33,19 +44,28 @@ def get_locations():
     try:
         with open('data/simplified_locations.json', 'r') as f:
             locations = json.load(f)
+            
+        # Add debug info
+        print(f"DEBUG: Serving {len(locations)} locations to client")
+        # Check for specific locations
+        location_names = [loc['name'] for loc in locations]
+        print("DEBUG: Riker Memorial Spaceport in API response:", "Riker Memorial Spaceport" in location_names)
+        print("DEBUG: Samson & Son's Salvage Center in API response:", "Samson & Son's Salvage Center" in location_names)
+        print("DEBUG: CRU-L4 Shallow Fields Station in API response:", "CRU-L4 Shallow Fields Station" in location_names)
+            
         return jsonify(locations)
     except FileNotFoundError:
         # If the file doesn't exist, regenerate the data
         print("Location data not found. Regenerating...")
-        download_and_process_map_data()
-        
-        # Try again after regenerating
         try:
-            with open('data/simplified_locations.json', 'r') as f:
-                locations = json.load(f)
-            return jsonify(locations)
-        except FileNotFoundError:
-            return jsonify({"error": "Failed to generate location data"}), 500
+            data = download_and_process_map_data()
+            return jsonify(data['simplified'])
+        except Exception as e:
+            print(f"Error generating location data: {e}")
+            return jsonify({"error": f"Failed to generate location data: {str(e)}"}), 500
+    except Exception as e:
+        print(f"Error loading location data: {e}")
+        return jsonify({"error": f"Error loading location data: {str(e)}"}), 500
 
 
 @app.route('/api/ships')
@@ -64,52 +84,61 @@ def get_ships():
 @app.route('/api/optimize', methods=['POST'])
 def optimize_route():
     """Optimize a cargo route for the given missions."""
-    data = request.json
-    
-    if not data:
-        return jsonify({"error": "No data provided"}), 400
-    
-    missions = data.get('missions', [])
-    start_location = data.get('start_location')
-    ship_id = data.get('ship_id', 'taurus')
-    
-    # Set ship capacity based on selected ship (default to Taurus)
-    ship_capacity = DEFAULT_SHIP_CAPACITY
-    if ship_id != 'taurus':
-        # In a real app, get this from a database or config
-        ships = {
-            "freelancer": 66,
-            "caterpillar": 576,
-            "cutlass_black": 46,
-            "c2_hercules": 696,
-        }
-        ship_capacity = ships.get(ship_id, DEFAULT_SHIP_CAPACITY)
-    
-    if not missions:
-        return jsonify({"error": "No missions provided"}), 400
-    
-    if not start_location:
-        return jsonify({"error": "No start location provided"}), 400
-    
-    # Validate missions
-    for mission in missions:
-        if 'pickup' not in mission or 'cargo_scu' not in mission:
-            return jsonify({"error": "Invalid mission format: missing pickup or cargo_scu"}), 400
-            
-        # Check for dropoffs (new format) or dropoff (old format)
-        if 'dropoffs' not in mission and 'dropoff' not in mission:
-            return jsonify({"error": "Invalid mission format: missing dropoff location(s)"}), 400
-            
-        # Ensure dropoffs is a list
-        if 'dropoffs' in mission and not isinstance(mission['dropoffs'], list):
-            return jsonify({"error": "Invalid mission format: dropoffs must be a list"}), 400
-            
-        # Ensure there's at least one dropoff
-        if 'dropoffs' in mission and len(mission['dropoffs']) == 0:
-            return jsonify({"error": "Invalid mission format: at least one dropoff location is required"}), 400
-    
-    result = calculate_route(missions, start_location, ship_capacity)
-    return jsonify(result)
+    try:
+        data = request.json
+        
+        if not data:
+            return jsonify({"error": "No data provided"}), 400
+        
+        missions = data.get('missions', [])
+        start_location = data.get('start_location')
+        ship_id = data.get('ship_id', 'taurus')
+        
+        print(f"Received optimize request: {json.dumps(data)}")
+        
+        # Set ship capacity based on selected ship (default to Taurus)
+        ship_capacity = DEFAULT_SHIP_CAPACITY
+        if ship_id != 'taurus':
+            # In a real app, get this from a database or config
+            ships = {
+                "freelancer": 66,
+                "caterpillar": 576,
+                "cutlass_black": 46,
+                "c2_hercules": 696,
+            }
+            ship_capacity = ships.get(ship_id, DEFAULT_SHIP_CAPACITY)
+        
+        if not missions:
+            return jsonify({"error": "No missions provided"}), 400
+        
+        # If no start_location provided, use the first pickup location
+        if not start_location and missions:
+            start_location = missions[0]['pickup']
+        
+        # Validate missions
+        for mission in missions:
+            if 'pickup' not in mission or 'cargo_scu' not in mission:
+                return jsonify({"error": "Invalid mission format: missing pickup or cargo_scu"}), 400
+                
+            # Check for dropoffs (new format) or dropoff (old format)
+            if 'dropoffs' not in mission and 'dropoff' not in mission:
+                return jsonify({"error": "Invalid mission format: missing dropoff location(s)"}), 400
+                
+            # Ensure dropoffs is a list
+            if 'dropoffs' in mission and not isinstance(mission['dropoffs'], list):
+                return jsonify({"error": "Invalid mission format: dropoffs must be a list"}), 400
+                
+            # Ensure there's at least one dropoff
+            if 'dropoffs' in mission and len(mission['dropoffs']) == 0:
+                return jsonify({"error": "Invalid mission format: at least one dropoff location is required"}), 400
+        
+        result = calculate_route(missions, start_location, ship_capacity)
+        return jsonify(result)
+    except Exception as e:
+        import traceback
+        error_msg = f"Error processing route optimization: {str(e)}\n{traceback.format_exc()}"
+        print(error_msg)
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route('/static/<path:path>')

@@ -14,7 +14,7 @@ class CargoMission:
     
     def __init__(self, mission_id: str, pickup: str, dropoffs: List[str], cargo_scu: float, 
                  cargo_type: str = "General", dropoff_cargo_types: List[str] = None,
-                 payout: float = 0.0, description: str = ""):
+                 dropoff_cargo_amounts: List[float] = None, payout: float = 0.0, description: str = ""):
         self.mission_id = mission_id
         self.pickup = pickup
         # Support multiple dropoffs (convert string to list if only one provided)
@@ -33,6 +33,23 @@ class CargoMission:
                 self.dropoff_cargo_types = dropoff_cargo_types + [cargo_type] * (len(self.dropoffs) - len(dropoff_cargo_types))
             else:
                 self.dropoff_cargo_types = dropoff_cargo_types[:len(self.dropoffs)]
+        
+        # Handle cargo amounts for each dropoff
+        if dropoff_cargo_amounts is None:
+            # If not specified, distribute cargo evenly among dropoffs
+            amount_per_dropoff = self.cargo_scu / len(self.dropoffs)
+            self.dropoff_cargo_amounts = [amount_per_dropoff] * len(self.dropoffs)
+        else:
+            # Make sure we have the right number of amounts
+            if len(dropoff_cargo_amounts) < len(self.dropoffs):
+                # Distribute remaining cargo evenly among remaining dropoffs
+                total_specified = sum(dropoff_cargo_amounts)
+                remaining = max(0, self.cargo_scu - total_specified)
+                remaining_dropoffs = len(self.dropoffs) - len(dropoff_cargo_amounts)
+                amount_per_remaining = remaining / remaining_dropoffs if remaining_dropoffs > 0 else 0
+                self.dropoff_cargo_amounts = dropoff_cargo_amounts + [amount_per_remaining] * remaining_dropoffs
+            else:
+                self.dropoff_cargo_amounts = dropoff_cargo_amounts[:len(self.dropoffs)]
                 
         self.payout = payout  # Mission payout in aUEC
         self.description = description
@@ -50,6 +67,13 @@ class CargoMission:
         if self.current_dropoff_index < len(self.dropoff_cargo_types):
             return self.dropoff_cargo_types[self.current_dropoff_index]
         return self.cargo_type
+
+    def get_current_cargo_amount(self) -> float:
+        """Get the cargo amount for the current dropoff."""
+        if self.current_dropoff_index < len(self.dropoff_cargo_amounts):
+            return self.dropoff_cargo_amounts[self.current_dropoff_index]
+        # Fallback to evenly distributed cargo if somehow missing
+        return self.cargo_scu / len(self.dropoffs) if len(self.dropoffs) > 0 else 0
         
     def advance_dropoff(self):
         """Move to the next dropoff location."""
@@ -64,10 +88,11 @@ class CargoMission:
         dropoff_info = []
         for i, dropoff in enumerate(self.dropoffs):
             cargo_type = self.dropoff_cargo_types[i] if i < len(self.dropoff_cargo_types) else self.cargo_type
-            dropoff_info.append(f"{dropoff} ({cargo_type})")
+            cargo_amount = self.dropoff_cargo_amounts[i] if i < len(self.dropoff_cargo_amounts) else 0
+            dropoff_info.append(f"{dropoff} ({cargo_type}, {cargo_amount} SCU)")
         
         dropoff_str = " → ".join(dropoff_info)
-        return f"Mission({self.mission_id}: {self.pickup} → [{dropoff_str}], {self.cargo_scu} SCU, {self.payout} aUEC)"
+        return f"Mission({self.mission_id}: {self.pickup} → [{dropoff_str}], {self.cargo_scu} SCU total, {self.payout} aUEC)"
 
 
 class RouteOptimizer:
@@ -101,11 +126,16 @@ class RouteOptimizer:
             return 0
         
         try:
-            idx_a = self.location_indices[location_a]
-            idx_b = self.location_indices[location_b]
+            idx_a = self.location_indices.get(location_a)
+            idx_b = self.location_indices.get(location_b)
+            
+            if idx_a is None or idx_b is None:
+                print(f"Warning: Location not found in distance matrix: {location_a} or {location_b}")
+                return float('inf')
+            
             return self.distance_matrix[idx_a][idx_b]
-        except KeyError:
-            print(f"Warning: Location not found in distance matrix: {location_a} or {location_b}")
+        except (KeyError, IndexError, TypeError) as e:
+            print(f"Error calculating distance between {location_a} and {location_b}: {e}")
             return float('inf')
     
     def optimize_route(self, missions: List[CargoMission], start_location: str) -> Dict[str, Any]:
@@ -129,12 +159,29 @@ class RouteOptimizer:
         # Create a graph of all locations
         G = nx.DiGraph()
         
-        # Add all unique locations
+        # Validate all locations exist in our data
         all_locations = set([start_location])
+        invalid_locations = []
+        
         for mission in missions:
             all_locations.add(mission.pickup)
             for dropoff in mission.dropoffs:
                 all_locations.add(dropoff)
+        
+        # Check all locations are valid
+        for loc in all_locations:
+            if loc not in self.location_indices:
+                invalid_locations.append(loc)
+        
+        if invalid_locations:
+            return {
+                "error": f"Invalid locations in request: {', '.join(invalid_locations)}",
+                "valid_locations": list(self.location_indices.keys())
+            }
+        
+        # Add all unique locations
+        for loc in all_locations:
+            G.add_node(loc)
         
         # Add edges with distances
         for loc_a in all_locations:
@@ -220,16 +267,16 @@ class RouteOptimizer:
                 # Get the cargo type for this specific dropoff
                 current_cargo_type = mission.get_current_cargo_type()
                 
-                # For simplicity, divide cargo evenly among dropoffs
-                cargo_per_dropoff = mission.cargo_scu / len(mission.dropoffs)
-                current_cargo -= cargo_per_dropoff
+                # Use the specific cargo amount for this dropoff
+                cargo_for_dropoff = mission.get_current_cargo_amount()
+                current_cargo -= cargo_for_dropoff
                 route.append(current_location)
                 cargo_at_steps.append(current_cargo)
                 
                 # Track cargo types
                 current_cargo_types = cargo_types_at_steps[-1].copy()
                 if current_cargo_type in current_cargo_types:
-                    current_cargo_types[current_cargo_type] = max(0, current_cargo_types[current_cargo_type] - cargo_per_dropoff)
+                    current_cargo_types[current_cargo_type] = max(0, current_cargo_types[current_cargo_type] - cargo_for_dropoff)
                     if current_cargo_types[current_cargo_type] == 0:
                         del current_cargo_types[current_cargo_type]
                 cargo_types_at_steps.append(current_cargo_types)
@@ -288,15 +335,40 @@ def calculate_route(missions: List[Dict[str, Any]], start_location: str, ship_ca
         
         # Get cargo types for each dropoff
         dropoff_cargo_types = mission.get("dropoff_cargo_types", [])
+        
+        # Get cargo amounts for each dropoff
+        dropoff_cargo_amounts = mission.get("dropoff_cargo_amounts", [])
+        
+        # Ensure we have valid dropoff_cargo_amounts
+        if dropoff_cargo_amounts is None:
+            dropoff_cargo_amounts = []
+            
+        # Convert string amounts to floats if needed
+        try:
+            dropoff_cargo_amounts = [float(amount) for amount in dropoff_cargo_amounts]
+        except (ValueError, TypeError):
+            # If there's any error in conversion, set to empty list and let 
+            # CargoMission handle the distribution
+            print(f"Warning: Could not convert cargo amounts to floats: {dropoff_cargo_amounts}")
+            dropoff_cargo_amounts = []
+            
+        # Ensure cargo_scu is valid
+        try:
+            cargo_scu = float(mission["cargo_scu"])
+        except (ValueError, TypeError, KeyError):
+            # If there's an issue with the cargo_scu value, use sum of dropoff amounts
+            cargo_scu = sum(dropoff_cargo_amounts) if dropoff_cargo_amounts else 0
+            print(f"Warning: Using calculated cargo_scu: {cargo_scu}")
             
         cargo_missions.append(
             CargoMission(
                 mission_id=mission_id,
                 pickup=mission["pickup"],
                 dropoffs=dropoffs,
-                cargo_scu=mission["cargo_scu"],
+                cargo_scu=cargo_scu,
                 cargo_type=cargo_type,
                 dropoff_cargo_types=dropoff_cargo_types,
+                dropoff_cargo_amounts=dropoff_cargo_amounts,
                 payout=payout,
                 description=mission.get("description", "")
             )
